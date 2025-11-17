@@ -25,12 +25,17 @@ app.post('/policies', async (req, res) => {
   ].join('\n');
 
   try {
-    await axios.put('http://opa:8181/v1/policies/eindhoven', { code: rego });
+    await axios.put(
+      'http://opa:8181/v1/policies/eindhoven',
+      rego,
+      { headers: { 'Content-Type': 'text/plain' } }
+    );
+
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: e.response?.data || e.message });
   }
-});
+}); // <--- THIS CLOSES app.post('/policies')
 
 app.get('/data/test', async (req, res) => {
   const input = {

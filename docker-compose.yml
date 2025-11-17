@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   apisix:
     image: apache/apisix:3.8.0-debian
@@ -13,7 +15,9 @@ services:
 
   opa:
     image: openpolicyagent/opa:0.70.0
-    command: run --server --addr :8181
+    command: ["run", "--server", "--addr", ":8181", "/policies"]
+    volumes:
+      - ./policies:/policies:ro
     ports:
       - "8181:8181"
 
@@ -21,9 +25,13 @@ services:
     build: ./pap
     ports:
       - "3000:3000"
+    depends_on:
+      - opa
 
   mock-data:
     container_name: mock-data
     image: nginx:1.27
     volumes:
       - ./mock-data/index.html:/usr/share/nginx/html/index.html:ro
+    ports:
+      - "8080:80"

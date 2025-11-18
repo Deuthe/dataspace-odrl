@@ -162,7 +162,4 @@ docker logs dataspace-odrl-green-pap-1
 
 ## Notes
 
-- Only simple "eq" constraints are supported.
-- ODRL "target" is currently not enforced.
-- The generated `.rego` file in pap/policies/generated/ is optional and for inspection.
 - The active policy in OPA is stored under the ID `eindhoven`.

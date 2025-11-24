@@ -98,7 +98,9 @@ curl -X POST http://localhost:3000/policies \
 ### 2. Load the example ODRL policy
 
 ```
-curl -X POST http://localhost:3000/policies   -H "Content-Type: application/json"   -d @pap/policies/eindhoven-ict.json
+curl -X POST http://localhost:3000/policies \
+  -H "Content-Type: application/json" \
+  -d @/home/deuthe/dataspace-odrl-green/policies/eindhoven-ict.json
 ```
 
 Expected response:
@@ -150,7 +152,9 @@ pap/policies/eindhoven-ict.json
 Then reload it:
 
 ```
-curl -X POST http://localhost:3000/policies   -H "Content-Type: application/json"   -d @pap/policies/eindhoven-ict.json
+curl -X POST http://localhost:3000/policies \
+  -H "Content-Type: application/json" \
+  -d @/home/deuthe/dataspace-odrl-green/policies/eindhoven-ict.json
 ```
 
 ---

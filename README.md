@@ -94,6 +94,11 @@ curl -X POST http://localhost:3000/policies \
   -d @/home/deuthe/dataspace-odrl-green/policies/eindhoven-ict.json
 ```
 ---
+# Check policies in OPA
+```
+curl -s http://localhost:8181/v1/policies/eindhoven | jq -r '.result.raw'
+```
+---
 
 ### 2. Load the example ODRL policy
 

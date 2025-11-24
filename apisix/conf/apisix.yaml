@@ -1,6 +1,9 @@
 routes:
-  - uri: /data/*
+  - uri: /*
     upstream:
-      type: roundrobin
       nodes:
-        "pap:3000": 1
+        "mock-data:80": 1
+      type: roundrobin
+# ... (rest of your config)
+
+#END

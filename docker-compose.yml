@@ -30,6 +30,7 @@ services:
     container_name: mock-data
     image: nginx:1.27
     volumes:
-      - ./mock-data/index.html:/usr/share/nginx/html/index.html:ro
+      # MOUNT CHANGE: Mapping data.json instead of index.html
+      - ./mock-data/data.json:/usr/share/nginx/html/data.json:ro
     ports:
       - "8080:80"

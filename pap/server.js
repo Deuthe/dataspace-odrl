@@ -3,15 +3,22 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
+// 1. Policy Upload Endpoint (Unchanged)
 app.post('/policies', async (req, res) => {
   const odrl = req.body;
   let constraints = '';
-  odrl.permission?.forEach(p => {
-    p.constraint?.forEach(c => {
-      constraints += `    input.attributes["${c.leftOperand}"] == "${c.rightOperand}"\n`;
+  // Extract constraints from ODRL JSON
+  if (odrl.permission) {
+    odrl.permission.forEach(p => {
+      if (p.constraint) {
+        p.constraint.forEach(c => {
+          constraints += `    input.attributes["${c.leftOperand}"] == "${c.rightOperand}"\n`;
+        });
+      }
     });
-  });
+  }
 
+  // Build Rego Policy
   const rego = [
     'package httpauthz',
     '',
@@ -25,18 +32,21 @@ app.post('/policies', async (req, res) => {
   ].join('\n');
 
   try {
+    // Push to OPA
     await axios.put(
       'http://opa:8181/v1/policies/eindhoven',
       rego,
       { headers: { 'Content-Type': 'text/plain' } }
     );
-
-    res.json({ success: true });
+    console.log("Policy updated successfully");
+    res.json({ success: true, status: "Policy Active" });
   } catch (e) {
-    res.status(500).json({ error: e.response?.data || e.message });
+    console.error("OPA Error:", e.message);
+    res.status(500).json({ error: "Failed to update policy engine" });
   }
-}); // <--- THIS CLOSES app.post('/policies')
+});
 
+// 2. Data Access Endpoint (UPDATED)
 app.get('/data/test', async (req, res) => {
   const input = {
     method: "GET",
@@ -48,16 +58,27 @@ app.get('/data/test', async (req, res) => {
   };
 
   try {
+    // Step A: Ask OPA for permission
     const opaResp = await axios.post('http://opa:8181/v1/data/httpauthz/allow', { input });
-    if (opaResp.data.result) {
-      const mockResp = await axios.get('http://mock-data/');
-      res.set('Content-Type', 'text/html').send(mockResp.data);
+    
+    if (opaResp.data.result === true) {
+      // Step B: Access Granted - Fetch JSON Data
+      // Note: We now fetch data.json, not the root /
+      const mockResp = await axios.get('http://mock-data/data.json');
+      
+      // Step C: Return clean JSON
+      res.json(mockResp.data);
     } else {
-      res.status(403).send('Forbidden by ODRL policy');
+      // Step D: Access Denied
+      res.status(403).json({ 
+        error: "Access Denied", 
+        reason: "ODRL Policy constraints not met." 
+      });
     }
   } catch (e) {
-    res.status(500).send('OPA error');
+    console.error(e.message);
+    res.status(500).json({ error: "Internal System Error" });
   }
 });
 
-app.listen(3000, () => console.log('PAP running'));
+app.listen(3000, () => console.log('PAP Service running on port 3000'));

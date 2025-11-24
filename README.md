@@ -83,6 +83,17 @@ Wait until:
 - APISIX is available on 9080
 
 ---
+# Delete the existing policy in OPA
+```
+curl -X DELETE http://localhost:3000/policies/eindhoven
+```
+# Reload the policy from the JSON file
+```
+curl -X POST http://localhost:3000/policies \
+  -H "Content-Type: application/json" \
+  -d @/home/deuthe/dataspace-odrl-green/policies/eindhoven-ict.json
+```
+---
 
 ### 2. Load the example ODRL policy
 

@@ -105,7 +105,7 @@ curl -s http://localhost:8181/v1/policies/eindhoven | jq -r '.result.raw'
 ```
 curl -X POST http://localhost:3000/policies \
   -H "Content-Type: application/json" \
-  -d @/home/deuthe/dataspace-odrl-green/policies/eindhoven-ict.json
+  -d @policies/eindhoven-ict.json
 ```
 
 Expected response:
